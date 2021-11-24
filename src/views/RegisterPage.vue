@@ -3,7 +3,7 @@
     <div class="row justify-content-center">
       <div class="register-form">
         <div class="logo-wrapper">
-          <img class="logo" src="/static/images/logo.png">
+          <img class="logo" src="/static/images/logo.png" alt="logo goes here">
           <div class="tagline">Open source task management tool</div>
         </div>
         <form @submit.prevent="submitForm">
@@ -20,7 +20,7 @@
             <input type="password" class="form-control" id="password" v-model="form.password">
           </div>
           <button type="submit" class="btn btn-primary btn-block">Create account</button>
-          <p class="accept-terms text-muted">By clicking “Create account”, you agree to our <a href="#">terms of
+          <p class="accept-terms text-muted">By clicking "Create account", you agree to our <a href="#">terms of
             service</a> and <a href="#">privacy policy</a>.</p>
           <p class="text-center text-muted">Already have an account? <a href="/login">Sign in</a></p>
         </form>

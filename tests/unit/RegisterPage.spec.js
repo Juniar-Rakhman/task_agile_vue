@@ -1,5 +1,9 @@
-import { mount } from '@vue/test-utils'
+import { mount, createLocalVue } from '@vue/test-utils'
+import VueRouter from 'vue-router'
 import RegisterPage from '@/views/RegisterPage'
+
+const localVue = createLocalVue()
+localVue.use(VueRouter)
 
 describe('RegisterPage.vue', () => {
   let wrapper
@@ -50,8 +54,7 @@ describe('RegisterPage.vue', () => {
   })
 
   it('should have form submit event handler `submitForm`', () => {
-    const stub = jest.fn()
-    wrapper.setMethods({ submitForm: stub })
+    const stub = jest.spyOn(wrapper.vm, 'submitForm')
     buttonSubmit.trigger('submit')
     expect(stub).toBeCalled()
   })
