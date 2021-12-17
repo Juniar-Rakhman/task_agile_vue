@@ -7,6 +7,7 @@
           <div class="tagline">Open source task management tool</div>
         </div>
         <form @submit.prevent="submitForm">
+        <div v-show="errorMessage" class="alert alert-danger failed">{{ errorMessage }}</div>
           <div class="form-group">
             <label for="username">Username</label>
             <input type="text" class="form-control" id="username" v-model="form.username">
@@ -27,12 +28,12 @@
       </div>
     </div>
     <footer class="footer">
-      <span class="copyright">&copy; 2018 TaskAgile.com</span>
+      <span class="copyright">&copy; 2021 TaskAgile.nl</span>
       <ul class="footer-links list-inline float-right">
         <li class="list-inline-item"><a href="#">About</a></li>
         <li class="list-inline-item"><a href="#">Terms of Service</a></li>
         <li class="list-inline-item"><a href="#">Privacy Policy</a></li>
-        <li class="list-inline-item"><a href="https://github.com/taskagile/vuejs.spring-boot.mysql" target="_blank">GitHub</a>
+        <li class="list-inline-item"><a href="https://github.com/taskagile" target="_blank">GitHub</a>
         </li>
       </ul>
     </footer>
@@ -40,10 +41,19 @@
 </template>
 
 <script>
+import registrationService from '@/services/registration'
+
 export default {
   name: 'RegisterPage',
   methods: {
     submitForm () {
+      // TODO: Validate the data
+      registrationService.register(this.form).then(() => {
+        this.$router.push({ name: 'LoginPage' })
+      }).catch((error) => {
+        this.errorMessage = 'Failed to register user. Reason: ' +
+          (error.message ? error.message : 'Unknown') + '.'
+      })
     }
   },
   data: function () {
@@ -52,7 +62,8 @@ export default {
         username: '',
         emailAddress: '',
         password: ''
-      }
+      },
+      errorMessage: ''
     }
   }
 }

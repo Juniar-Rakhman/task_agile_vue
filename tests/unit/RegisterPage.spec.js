@@ -1,9 +1,14 @@
-import { mount, createLocalVue } from '@vue/test-utils'
+import { createLocalVue, mount } from '@vue/test-utils'
 import VueRouter from 'vue-router'
 import RegisterPage from '@/views/RegisterPage'
 
 const localVue = createLocalVue()
 localVue.use(VueRouter)
+
+const router = new VueRouter()
+
+// Mock dependency registrationService
+jest.mock('@/services/registration')
 
 describe('RegisterPage.vue', () => {
   let wrapper
@@ -13,11 +18,18 @@ describe('RegisterPage.vue', () => {
   let buttonSubmit
 
   beforeEach(() => {
-    wrapper = mount(RegisterPage)
+    wrapper = mount(RegisterPage, {
+      localVue, // Use local Vue, so it won't affect the global Vue class
+      router // To check redirection
+    })
     fieldUsername = wrapper.find('#username')
     fieldEmailAddress = wrapper.find('#emailAddress')
     fieldPassword = wrapper.find('#password')
     buttonSubmit = wrapper.find('form button[type="submit"]')
+  })
+
+  afterAll(() => {
+    jest.restoreAllMocks()
   })
 
   it('should render correct contents', () => {
@@ -57,5 +69,27 @@ describe('RegisterPage.vue', () => {
     const stub = jest.spyOn(wrapper.vm, 'submitForm')
     buttonSubmit.trigger('submit')
     expect(stub).toBeCalled()
+  })
+
+  it('should register when it is a new user', () => {
+    const stub = jest.fn()
+    wrapper.vm.$router.push = stub // Check whether the redirection occurs or not
+    wrapper.vm.form.username = 'sunny'
+    wrapper.vm.form.emailAddress = 'sunny@local'
+    wrapper.vm.form.password = 'Jest!'
+    wrapper.vm.submitForm() // Trigger the form submit
+    wrapper.vm.$nextTick(() => {
+      expect(stub).toHaveBeenCalledWith({ name: 'LoginPage' })
+    })
+  })
+
+  it('should fail when it is not a new user', () => {
+    // In the mock, only sunny@local is new user
+    wrapper.vm.form.emailAddress = 'ted@local'
+    expect(wrapper.find('.failed').isVisible()).toBe(false)
+    wrapper.vm.submitForm()
+    wrapper.vm.$nextTick(() => {
+      expect(wrapper.find('.failed').isVisible()).toBe(true)
+    })
   })
 })
